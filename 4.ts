@@ -1,8 +1,6 @@
 // You got roped into the cutest halloween competition, judging
 // doggy halloween pet costumes at the annual parade. 
 
-import { walkUpBindingElementsAndPatterns } from "typescript";
-
 declare function decideWinner(breed: string, costume: string): { name: string, video: string }
 window.decideWinner = someoneElseDecides
 
@@ -22,15 +20,19 @@ const costumes = ["Pumpkin", "Hot Dog", "Bumble Bee"] as const
 
 type Lowercase<T extends string> = `${lowercase T}`
 
+function createBreedCostumeId(breed: typeof breeds[number], costume: typeof costumes[number]) {
+    return `${breed}-${costume}`.toLowerCase() as Lowercase<`${typeof breed}-${typeof costume}`>
+}
+
 function tallyPopularWinners(_breeds: typeof breeds, _costumes: typeof costumes) {
     const winners: Record<
-        Lowercase<`${typeof _breeds[number]}-${typeof _costumes[number]}`>,
+        ReturnType<typeof createBreedCostumeId>,
         ReturnType<typeof decideWinner>
     > = {} as any
 
     for (const breed of _breeds) {
         for (const costume of _costumes) {
-            const id = `${breed}-${costume}`.toLowerCase();
+            const id = createBreedCostumeId(breed, costume)
             winners[id] = decideWinner(breed, costume)
         }
     }
