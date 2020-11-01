@@ -18,22 +18,22 @@ type AllMovies = keyof typeof moviesToShow;
 type MovieActionsPrefixes = 'getVHSFor' | 'makePopcornFor' | 'play'
 type Scheduler<A extends AllMovies> = Record<`${MovieActionsPrefixes}${capitalize A}`, () => void>
 
-function prefix<T extends `${capitalize AllMovies}`, K extends MovieActionsPrefixes>(
-    strings: [K],
-    capitalName: T):
-    `${K}${T}` {
-    return `${strings[0]}${capitalName}` as any;
+function capitalize<T extends string>(word: T) {
+    return word.charAt(0).toUpperCase() + word.slice(1) as `${capitalize T}`;
+}
+
+function prefix<A extends string>(prefix: MovieActionsPrefixes, name: A) {
+    return `${prefix}${name}` as `${MovieActionsPrefixes}${A}`;
 }
 
 function makeScheduler(movies: typeof moviesToShow) {
-    // - const schedule = {} as any
     const schedule: Scheduler<AllMovies> = {} as any
-    for (const movie in Object.keys(movies)) {
-        const capitalName = movie.charAt(0).toUpperCase() + movie.slice(1);
+    for (const movie of Object.keys(movies) as AllMovies[]) {
+        const capitalName = capitalize(movie);
 
-        schedule[`getVHSFor${capitalName}`] = () => { }
-        schedule[`makePopcornFor${capitalName}`] = () => { }
-        schedule[`play${capitalName}`] = () => { }
+        schedule[prefix('getVHSFor', capitalName)] = () => { }
+        schedule[prefix('makePopcornFor', capitalName)] = () => { }
+        schedule[prefix('play', capitalName)] = () => { }
     }
 
     return schedule
@@ -99,16 +99,19 @@ movieNight.playHocusPocus()
 
 type KidsMovies = { [K in AllMovies]: typeof moviesToShow[K] extends { forKids: true } ? K : never }[AllMovies]
 
+function isForKids(name: AllMovies, movies: typeof moviesToShow): name is KidsMovies {
+    return movies[name].forKids;
+}
+
 function makeKidScheduler(movies: typeof moviesToShow) {
     const schedule: Scheduler<KidsMovies> = {} as any
-    for (const movie in Object.keys(movies)) {
-        // @ts-ignore
-        if (moviesToShow[movie].forKids) {
-            const capitalName = movie.charAt(0).toUpperCase() + movie.slice(1);
+    for (const movie of Object.keys(movies) as AllMovies[]) {
+        if (isForKids(movie, moviesToShow)) {
+            const capitalName = capitalize(movie);
 
-            schedule[`getVHSFor${capitalName}`] = () => { }
-            schedule[`makePopcornFor${capitalName}`] = () => { }
-            schedule[`play${capitalName}`] = () => { }
+            schedule[prefix('getVHSFor', capitalName)] = () => { }
+            schedule[prefix('makePopcornFor', capitalName)] = () => { }
+            schedule[prefix('play', capitalName)] = () => { }
         }
     }
 
