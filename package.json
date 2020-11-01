@@ -1,0 +1,9 @@
+{
+    "name": "type-or-treat-2020",
+    "version": "0.0.1-alpha",
+    "author": "Miguel Gonzalez",
+    "license": "MIT",
+    "dependencies": {
+        "typescript": "^4.1.0-beta"
+    }
+}
