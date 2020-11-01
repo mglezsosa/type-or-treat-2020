@@ -14,22 +14,22 @@ const moviesToShow = {
 // codebase for creating the scheduler. An OK call for a first pass, but
 // we're sharing code with others and want to be explicit.
 
-type AllMovies = keyof typeof moviesToShow;
+type AllMovies = keyof typeof moviesToShow
 type MovieActionsPrefixes = 'getVHSFor' | 'makePopcornFor' | 'play'
 type Scheduler<A extends AllMovies> = Record<`${MovieActionsPrefixes}${capitalize A}`, () => void>
 
 function capitalize<T extends string>(word: T) {
-    return word.charAt(0).toUpperCase() + word.slice(1) as `${capitalize T}`;
+    return word.charAt(0).toUpperCase() + word.slice(1) as `${capitalize T}`
 }
 
 function prefix<A extends string>(prefix: MovieActionsPrefixes, name: A) {
-    return `${prefix}${name}` as `${MovieActionsPrefixes}${A}`;
+    return `${prefix}${name}` as `${MovieActionsPrefixes}${A}`
 }
 
 function makeScheduler(movies: typeof moviesToShow) {
     const schedule: Scheduler<AllMovies> = {} as any
     for (const movie of Object.keys(movies) as AllMovies[]) {
-        const capitalName = capitalize(movie);
+        const capitalName = capitalize(movie)
 
         schedule[prefix('getVHSFor', capitalName)] = () => { }
         schedule[prefix('makePopcornFor', capitalName)] = () => { }
@@ -100,14 +100,14 @@ movieNight.playHocusPocus()
 type KidsMovies = { [K in AllMovies]: typeof moviesToShow[K] extends { forKids: true } ? K : never }[AllMovies]
 
 function isForKids(name: AllMovies, movies: typeof moviesToShow): name is KidsMovies {
-    return movies[name].forKids;
+    return movies[name].forKids
 }
 
 function makeKidScheduler(movies: typeof moviesToShow) {
     const schedule: Scheduler<KidsMovies> = {} as any
     for (const movie of Object.keys(movies) as AllMovies[]) {
         if (isForKids(movie, moviesToShow)) {
-            const capitalName = capitalize(movie);
+            const capitalName = capitalize(movie)
 
             schedule[prefix('getVHSFor', capitalName)] = () => { }
             schedule[prefix('makePopcornFor', capitalName)] = () => { }
